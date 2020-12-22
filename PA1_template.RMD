@@ -1,0 +1,68 @@
+---
+title: "Reproducible Research 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(imputeTS)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r data}
+data <- read.csv('C:\\Users\\U57TTO\\Downloads\\repdata_data_activity\\activity.csv')
+data$date <- as.Date(data$date)
+
+daily_steps <- data %>% group_by(date) %>% summarize(total = sum(steps, na.rm = TRUE)
+                            ,mean = mean(steps, na.rm = TRUE) 
+                            ,median = median(steps,na.rm=TRUE))
+```
+
+## Steps Histogram
+
+```{r hist}
+hist(daily_steps$total) 
+```
+
+## Steps Mean & Median
+```{r m&m}
+print(daily_steps)
+```
+## Steps Plot
+
+```{r plt}
+plot(x=daily_steps$date[complete.cases(daily_steps[,c(1,3)])], y = daily_steps$total[complete.cases(daily_steps[,c(1,3)])])
+```
+
+```{r max}
+int5_steps <- data %>% group_by(interval) %>% summarize(total = sum(steps, na.rm = TRUE))
+int5_steps$interval[int5_steps$total==max(int5_steps$total)]
+```
+Impute values by taking the average of the preceeding and subsequent intervals. The values in the resulting histogram differ, but not very meaningfully.
+```{r imputation}
+data <- data[sort(data$interval),]
+data$steps <- na_ma(data$steps, k = 1)
+daily_steps <- data %>% group_by(date) %>% summarize(total = sum(steps, na.rm = TRUE)
+                            ,mean = mean(steps, na.rm = TRUE) 
+                            ,median = median(steps,na.rm=TRUE))
+hist(daily_steps$total)
+
+```
+
+```{r weekday}
+data$weekday <- weekdays(data$date)
+data$weekend <- 'Weekday'
+data$weekend[data$weekday %in% c('Saturday', 'Sunday')] <- 'Weekend'
+data2 <- data %>% group_by(interval, weekend) %>% summarize(steps = sum(steps))
+par(mfrow=c(2,1))
+with(data2[data2$weekend=='Weekday',],
+  plot(x=interval, y = steps,type = 'l', main = 'Weekday'))
+with(data2[data2$weekend=='Weekend',],
+  plot(x=interval, y = steps,type = 'l',main = 'Weekend'))
+```
