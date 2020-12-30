@@ -366,10 +366,8 @@ summary {
 </div>
 
 
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
+<div id="data" class="section level2">
+<h2>Data</h2>
 <pre class="r"><code>data &lt;- read.csv(&#39;C:\\Users\\U57TTO\\Downloads\\repdata_data_activity\\activity.csv&#39;)
 data$date &lt;- as.Date(data$date)
 
@@ -409,6 +407,9 @@ daily_steps &lt;- data %&gt;% group_by(date) %&gt;% summarize(total = sum(steps,
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <pre class="r"><code>int5_steps$interval[int5_steps$total==max(int5_steps$total)]</code></pre>
 <pre><code>## [1] 835</code></pre>
+</div>
+<div id="this-says-how-im-imputing-values." class="section level2">
+<h2>This says how I’m imputing values.</h2>
 <p>Impute values by taking the average of the preceeding and subsequent intervals. The values in the resulting histogram differ, but not very meaningfully.</p>
 <pre class="r"><code>data &lt;- data[sort(data$interval),]
 data$steps &lt;- na_ma(data$steps, k = 1)
